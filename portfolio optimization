@@ -1,0 +1,700 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Hirmay/Qiskit/blob/master/portfolio%20optimization\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        },
+        "id": "NPNW5BG0mt5x",
+        "outputId": "1e6961e9-1d90-4539-a4c9-a85a09355a80"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Looking in indexes: https://pypi.org/simple, https://us-python.pkg.dev/colab-wheels/public/simple/\n",
+            "Collecting dimod\n",
+            "  Downloading dimod-0.12.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (15.0 MB)\n",
+            "\u001b[K     |████████████████████████████████| 15.0 MB 5.6 MB/s \n",
+            "\u001b[?25hRequirement already satisfied: numpy<2.0.0,>=1.17.3 in /usr/local/lib/python3.7/dist-packages (from dimod) (1.21.6)\n",
+            "Installing collected packages: dimod\n",
+            "Successfully installed dimod-0.12.2\n",
+            "Looking in indexes: https://pypi.org/simple, https://us-python.pkg.dev/colab-wheels/public/simple/\n",
+            "Collecting dwave_qbsolv\n",
+            "  Downloading dwave_qbsolv-0.3.4-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (271 kB)\n",
+            "\u001b[K     |████████████████████████████████| 271 kB 5.3 MB/s \n",
+            "\u001b[?25hCollecting dimod<0.11.0,>=0.8.1\n",
+            "  Downloading dimod-0.10.17-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (13.2 MB)\n",
+            "\u001b[K     |████████████████████████████████| 13.2 MB 47.1 MB/s \n",
+            "\u001b[?25hRequirement already satisfied: numpy<2.0.0,>=1.19.1 in /usr/local/lib/python3.7/dist-packages (from dimod<0.11.0,>=0.8.1->dwave_qbsolv) (1.21.6)\n",
+            "Collecting pyparsing<3.0.0,>=2.4.7\n",
+            "  Downloading pyparsing-2.4.7-py2.py3-none-any.whl (67 kB)\n",
+            "\u001b[K     |████████████████████████████████| 67 kB 7.4 MB/s \n",
+            "\u001b[?25hInstalling collected packages: pyparsing, dimod, dwave-qbsolv\n",
+            "  Attempting uninstall: pyparsing\n",
+            "    Found existing installation: pyparsing 3.0.9\n",
+            "    Uninstalling pyparsing-3.0.9:\n",
+            "      Successfully uninstalled pyparsing-3.0.9\n",
+            "  Attempting uninstall: dimod\n",
+            "    Found existing installation: dimod 0.12.2\n",
+            "    Uninstalling dimod-0.12.2:\n",
+            "      Successfully uninstalled dimod-0.12.2\n",
+            "Successfully installed dimod-0.10.17 dwave-qbsolv-0.3.4 pyparsing-2.4.7\n"
+          ]
+        },
+        {
+          "output_type": "display_data",
+          "data": {
+            "application/vnd.colab-display-data+json": {
+              "pip_warning": {
+                "packages": [
+                  "pyparsing"
+                ]
+              }
+            }
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Looking in indexes: https://pypi.org/simple, https://us-python.pkg.dev/colab-wheels/public/simple/\n",
+            "Collecting dwave.system\n",
+            "  Downloading dwave_system-1.16.0-py3-none-any.whl (103 kB)\n",
+            "\u001b[K     |████████████████████████████████| 103 kB 5.3 MB/s \n",
+            "\u001b[?25hCollecting dwave-greedy>=0.2.0\n",
+            "  Downloading dwave_greedy-0.2.5-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (658 kB)\n",
+            "\u001b[K     |████████████████████████████████| 658 kB 30.0 MB/s \n",
+            "\u001b[?25hCollecting dwave-preprocessing>=0.3\n",
+            "  Downloading dwave_preprocessing-0.5.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.2 MB)\n",
+            "\u001b[K     |████████████████████████████████| 2.2 MB 36.8 MB/s \n",
+            "\u001b[?25hRequirement already satisfied: scipy<2.0.0,>=1.5.2 in /usr/local/lib/python3.7/dist-packages (from dwave.system) (1.7.3)\n",
+            "Collecting dwave-networkx>=0.8.10\n",
+            "  Downloading dwave_networkx-0.8.12-py3-none-any.whl (97 kB)\n",
+            "\u001b[K     |████████████████████████████████| 97 kB 7.2 MB/s \n",
+            "\u001b[?25hCollecting dwave-cloud-client<0.11.0,>=0.9.1\n",
+            "  Downloading dwave_cloud_client-0.10.3-py3-none-any.whl (111 kB)\n",
+            "\u001b[K     |████████████████████████████████| 111 kB 60.9 MB/s \n",
+            "\u001b[?25hCollecting minorminer<0.3.0,>=0.2.8\n",
+            "  Downloading minorminer-0.2.9-cp37-cp37m-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (5.3 MB)\n",
+            "\u001b[K     |████████████████████████████████| 5.3 MB 43.4 MB/s \n",
+            "\u001b[?25hCollecting homebase<2.0.0,>=1.0.0\n",
+            "  Downloading homebase-1.0.1-py2.py3-none-any.whl (11 kB)\n",
+            "Requirement already satisfied: networkx<3.0,>=2.0 in /usr/local/lib/python3.7/dist-packages (from dwave.system) (2.6.3)\n",
+            "Requirement already satisfied: dimod<0.13.0,>=0.10.0 in /usr/local/lib/python3.7/dist-packages (from dwave.system) (0.10.17)\n",
+            "Requirement already satisfied: numpy<2.0.0,>=1.17.3 in /usr/local/lib/python3.7/dist-packages (from dwave.system) (1.21.6)\n",
+            "Requirement already satisfied: pyparsing<3.0.0,>=2.4.7 in /usr/local/lib/python3.7/dist-packages (from dimod<0.13.0,>=0.10.0->dwave.system) (2.4.7)\n",
+            "Collecting diskcache>=5.2.1\n",
+            "  Downloading diskcache-5.4.0-py3-none-any.whl (44 kB)\n",
+            "\u001b[K     |████████████████████████████████| 44 kB 3.6 MB/s \n",
+            "\u001b[?25hCollecting plucky>=0.4.3\n",
+            "  Downloading plucky-0.4.3-py2.py3-none-any.whl (10 kB)\n",
+            "Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.7/dist-packages (from dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (7.1.2)\n",
+            "Requirement already satisfied: python-dateutil>=2.7 in /usr/local/lib/python3.7/dist-packages (from dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (2.8.2)\n",
+            "Requirement already satisfied: requests[socks]>=2.18 in /usr/local/lib/python3.7/dist-packages (from dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (2.23.0)\n",
+            "Requirement already satisfied: pydantic>=1.7.3 in /usr/local/lib/python3.7/dist-packages (from dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (1.10.2)\n",
+            "Requirement already satisfied: importlib-metadata>=1.0 in /usr/local/lib/python3.7/dist-packages (from dwave-greedy>=0.2.0->dwave.system) (4.13.0)\n",
+            "Collecting dimod<0.13.0,>=0.10.0\n",
+            "  Using cached dimod-0.12.2-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (15.0 MB)\n",
+            "Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.7/dist-packages (from importlib-metadata>=1.0->dwave-greedy>=0.2.0->dwave.system) (3.10.0)\n",
+            "Requirement already satisfied: typing-extensions>=3.6.4 in /usr/local/lib/python3.7/dist-packages (from importlib-metadata>=1.0->dwave-greedy>=0.2.0->dwave.system) (4.1.1)\n",
+            "Collecting fasteners\n",
+            "  Downloading fasteners-0.18-py3-none-any.whl (18 kB)\n",
+            "Collecting rectangle-packer>=2.0.1\n",
+            "  Downloading rectangle_packer-2.0.1-cp37-cp37m-manylinux2010_x86_64.whl (246 kB)\n",
+            "\u001b[K     |████████████████████████████████| 246 kB 70.8 MB/s \n",
+            "\u001b[?25hRequirement already satisfied: six>=1.5 in /usr/local/lib/python3.7/dist-packages (from python-dateutil>=2.7->dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (1.15.0)\n",
+            "Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /usr/local/lib/python3.7/dist-packages (from requests[socks]>=2.18->dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (1.24.3)\n",
+            "Requirement already satisfied: idna<3,>=2.5 in /usr/local/lib/python3.7/dist-packages (from requests[socks]>=2.18->dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (2.10)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.7/dist-packages (from requests[socks]>=2.18->dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (2022.9.24)\n",
+            "Requirement already satisfied: chardet<4,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from requests[socks]>=2.18->dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (3.0.4)\n",
+            "Requirement already satisfied: PySocks!=1.5.7,>=1.5.6 in /usr/local/lib/python3.7/dist-packages (from requests[socks]>=2.18->dwave-cloud-client<0.11.0,>=0.9.1->dwave.system) (1.7.1)\n",
+            "Installing collected packages: dimod, rectangle-packer, plucky, homebase, fasteners, dwave-networkx, diskcache, minorminer, dwave-preprocessing, dwave-greedy, dwave-cloud-client, dwave.system\n",
+            "  Attempting uninstall: dimod\n",
+            "    Found existing installation: dimod 0.10.17\n",
+            "    Uninstalling dimod-0.10.17:\n",
+            "      Successfully uninstalled dimod-0.10.17\n",
+            "\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n",
+            "dwave-qbsolv 0.3.4 requires dimod<0.11.0,>=0.8.1, but you have dimod 0.12.2 which is incompatible.\u001b[0m\n",
+            "Successfully installed dimod-0.12.2 diskcache-5.4.0 dwave-cloud-client-0.10.3 dwave-greedy-0.2.5 dwave-networkx-0.8.12 dwave-preprocessing-0.5.3 dwave.system-1.16.0 fasteners-0.18 homebase-1.0.1 minorminer-0.2.9 plucky-0.4.3 rectangle-packer-2.0.1\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install dimod\n",
+        "!pip install dwave_qbsolv\n",
+        "!pip install dwave.system"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import dimod\n",
+        "from dimod import Binary,Real,Integer\n",
+        "import numpy as np\n",
+        "from dimod import ConstrainedQuadraticModel,ExactCQMSolver\n",
+        "from dwave.system import LeapHybridCQMSampler\n",
+        "from itertools import product\n",
+        "from dimod import quicksum "
+      ],
+      "metadata": {
+        "id": "gusJG3xcqGqB"
+      },
+      "execution_count": 2,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "input = {\n",
+        "\"data\": {\n",
+        "\"yields\": [\n",
+        "-0.007160227644254851,\n",
+        "-0.00793367384574617,\n",
+        "0.024413045885484555,\n",
+        "-0.0002146171193717296,\n",
+        "-2.249918842909068e-05\n",
+        "],\n",
+        "\"covariances\": [\n",
+        "[\n",
+        "0.0038157652368060323,\n",
+        "0.0015700557963821136,\n",
+        "0.001944487805027174,\n",
+        "-1.4960893703623998e-05,\n",
+        "-8.562050839529088e-06\n",
+        "],\n",
+        "[\n",
+        "0.0015700557963821136,\n",
+        "0.0014974905994246982,\n",
+        "0.001594092625185462,\n",
+        "-1.1451606497045846e-05,\n",
+        "4.616497402515085e-06\n",
+        "],\n",
+        "[\n",
+        "0.001944487805027174,\n",
+        "0.001594092625185462,\n",
+        "0.0026203027743110113,\n",
+        "-1.6863859029536748e-05,\n",
+        "-2.0337440465795577e-06\n",
+        "],\n",
+        "[\n",
+        "-1.4960893703623998e-05,\n",
+        "-1.1451606497045846e-05,\n",
+        "-1.6863859029536748e-05,\n",
+        "1.4751323091072527e-05,\n",
+        "8.144448526693875e-06\n",
+        "],\n",
+        "[\n",
+        "-8.562050839529088e-06,\n",
+        "4.616497402515085e-06,\n",
+        "-2.0337440465795577e-06,\n",
+        "8.144448526693875e-06,\n",
+        "2.1356484329929007e-05\n",
+        "]\n",
+        "],\n",
+        "\"budget\": 10000000,\n",
+        "\"prices\": [\n",
+        "262.66839599609375,\n",
+        "18837.66796875,\n",
+        "1561.74853515625,\n",
+        "0.9998779892921448,\n",
+        "1.0000489950180054\n",
+        "],\n",
+        "\"tickers\": [\n",
+        "\"BNB-USD\",\n",
+        "\"BTC-USD\",\n",
+        "\"ETH-USD\",\n",
+        "\"USDC-USD\",\n",
+        "\"USDT-USD\"\n",
+        "]\n",
+        "},\n",
+        "\"extra_arguments\": {\n",
+        "\"risk_acceptance_level\": 0.2,\n",
+        "\"adjusted_solution\": False,\n",
+        "\"show_time\": True\n",
+        "}\n",
+        "}\n",
+        "\n",
+        "output = {\n",
+        "'time': 0.007896184921264648,\n",
+        "'solution':\n",
+        "[('BNB-USD', 0.0),\n",
+        "('BTC-USD', 0.0),\n",
+        "('ETH-USD', 2561.2318),\n",
+        "('USDC-USD', 2000244.0512),\n",
+        "('USDT-USD', 3999804.0295)],\n",
+        "'sharpe_ratio': -0.25759409915544984,\n",
+        "'expected_return': 97132.9525494784,\n",
+        "'risk': 0.020523392276396053\n",
+        "}"
+      ],
+      "metadata": {
+        "id": "NVQu32shmzXR"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "p = input[\"data\"][\"prices\"]\n",
+        "# x = [i[1] for i in output[\"solution\"]]\n",
+        "r = input[\"data\"][\"yields\"]\n",
+        "m = input[\"data\"][\"covariances\"]\n",
+        "rfr = 0\n",
+        "budget = input[\"data\"][\"budget\"]\n",
+        "stocks = input[\"data\"][\"tickers\"]"
+      ],
+      "metadata": {
+        "id": "DvpXGKycGSdI"
+      },
+      "execution_count": 4,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "max_num_shares = {j:int(budget/i) for i,j in zip(p,stocks)}\n",
+        "max_num_shares"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "BLndvC3yVJV8",
+        "outputId": "e27e9a7e-adc3-4cd1-d822-55798096eaa9"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "{'BNB-USD': 38070,\n",
+              " 'BTC-USD': 530,\n",
+              " 'ETH-USD': 6403,\n",
+              " 'USDC-USD': 10001220,\n",
+              " 'USDT-USD': 9999510}"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 5
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Instantiating the CQM object \n",
+        "cqm = ConstrainedQuadraticModel()\n",
+        "\n",
+        "# Defining and adding variables to the CQM model \n",
+        "x = [Integer(\"%s\" %s, lower_bound=0, \n",
+        "                upper_bound=max_num_shares[s]) for s in stocks]"
+      ],
+      "metadata": {
+        "id": "eFkCPcTLXuoP"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "x"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "7RJSRNMBZT0g",
+        "outputId": "fa1eb0c7-bb38-4fe5-a2d5-6dc96ccbe257"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[QuadraticModel({'BNB-USD': 1.0}, {}, 0.0, {'BNB-USD': 'INTEGER'}, dtype='float64'),\n",
+              " QuadraticModel({'BTC-USD': 1.0}, {}, 0.0, {'BTC-USD': 'INTEGER'}, dtype='float64'),\n",
+              " QuadraticModel({'ETH-USD': 1.0}, {}, 0.0, {'ETH-USD': 'INTEGER'}, dtype='float64'),\n",
+              " QuadraticModel({'USDC-USD': 1.0}, {}, 0.0, {'USDC-USD': 'INTEGER'}, dtype='float64'),\n",
+              " QuadraticModel({'USDT-USD': 1.0}, {}, 0.0, {'USDT-USD': 'INTEGER'}, dtype='float64')]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 7
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cqm = ConstrainedQuadraticModel()\n",
+        "risk = 0\n",
+        "for i in range(len(p)):\n",
+        "  for j in range(len(p)):\n",
+        "    coeff = p[i]*p[j]*m[j][i]\n",
+        "    risk = risk + coeff*x[j]*x[i]\n",
+        "risk"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "OW3sId0EGopy",
+        "outputId": "91546b31-35d0-4506-e89a-ad2e7c02e944"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "QuadraticModel({'BNB-USD': 0.0, 'BTC-USD': 0.0, 'ETH-USD': 0.0, 'USDC-USD': 0.0, 'USDT-USD': 0.0}, {('BNB-USD', 'BNB-USD'): 263.26752533678126, ('BTC-USD', 'BNB-USD'): 15537.460660824137, ('BTC-USD', 'BTC-USD'): 531396.1215481978, ('ETH-USD', 'BNB-USD'): 1595.3432853457618, ('ETH-USD', 'BTC-USD'): 93795.45474518836, ('ETH-USD', 'ETH-USD'): 6391.071720357191, ('USDC-USD', 'BNB-USD'): -0.007858548959475237, ('USDC-USD', 'BTC-USD'): -0.43139048111956974, ('USDC-USD', 'ETH-USD'): -0.052667787454751876, ('USDC-USD', 'USDC-USD'): 1.4747723671925476e-05, ('USDT-USD', 'BNB-USD'): -0.004498180698559138, ('USDT-USD', 'BTC-USD'): 0.1739366121042774, ('USDT-USD', 'ETH-USD'): -0.006352704806894138, ('USDT-USD', 'USDC-USD'): 1.628770761095883e-05, ('USDT-USD', 'USDT-USD'): 2.135857710386405e-05}, 0.0, {'BNB-USD': 'INTEGER', 'BTC-USD': 'INTEGER', 'ETH-USD': 'INTEGER', 'USDC-USD': 'INTEGER', 'USDT-USD': 'INTEGER'}, dtype='float64')"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 8
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "returns = 0\n",
+        "for s in range(len(p)): \n",
+        "    returns = returns + p[s] * r[s] * x[s]"
+      ],
+      "metadata": {
+        "id": "8QYEh1OhTBvW"
+      },
+      "execution_count": 9,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "returns"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "f23jOn5br0-W",
+        "outputId": "c7f65d0c-f421-4aa1-dea3-55e4f359bbe6"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "QuadraticModel({'BNB-USD': -1.8807655102833107, 'BTC-USD': -149.45191367852226, 'ETH-USD': 38.12703865035782, 'USDC-USD': -0.00021459093378507722, 'USDT-USD': -2.250029077723287e-05}, {}, 0.0, {'BNB-USD': 'INTEGER', 'BTC-USD': 'INTEGER', 'ETH-USD': 'INTEGER', 'USDC-USD': 'INTEGER', 'USDT-USD': 'INTEGER'}, dtype='float64')"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 10
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cqm.add_constraint(quicksum([x[s]*p[s] for s in range(len(p))])\n",
+        "                <= budget, label='upper_budget')\n",
+        "cqm.add_constraint(quicksum([x[s]*p[s] for s in range(len(p))])\n",
+        "                >= 0.95*budget, label='lower_budget')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 35
+        },
+        "id": "Rv3qjN4G-y5c",
+        "outputId": "2fc68a9a-4d66-48b8-82ab-315ba4dc212e"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "'lower_budget'"
+            ],
+            "application/vnd.google.colaboratory.intrinsic+json": {
+              "type": "string"
+            }
+          },
+          "metadata": {},
+          "execution_count": 11
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "cqm.set_objective(0.5*risk - returns)"
+      ],
+      "metadata": {
+        "id": "Z6x-vTe-_zoz"
+      },
+      "execution_count": 12,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "sampler = LeapHybridCQMSampler(token=\"DEV-2e547c59470238ffd21b1fc4c53d06edb0790862\")     \n",
+        "sampleset = sampler.sample_cqm(cqm)\n",
+        "# sampleset = ExactCQMSolver().sample_cqm(cqm)\n",
+        "feasible_sampleset = sampleset.filter(lambda row: row.is_feasible)\n",
+        "feasible_sampleset.first.sample.items()\n",
+        "\n",
+        "\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Pppqggi1qFJe",
+        "outputId": "cd04a6e0-337d-44d2-bdfc-0ee356676d58"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "dict_items([('BNB-USD', 4.0), ('BTC-USD', 0.0), ('ETH-USD', 0.0), ('USDC-USD', 7073790.0), ('USDT-USD', 2426912.0)])"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 13
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "x = []\n",
+        "budget_sum = 0\n",
+        "for i,j in zip(feasible_sampleset.first.sample.items(),p):\n",
+        "\n",
+        "  budget_sum = budget_sum + i[1]*j\n",
+        "  x.append(i[1])\n",
+        "budget_sum"
+      ],
+      "metadata": {
+        "id": "YB5ANs9yrnVW",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "b2824c2b-cb3f-4760-9e68-2e1a8e37741f"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "9501008.502056003"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 14
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "x"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "BEFkfMFbAlas",
+        "outputId": "a107726a-83ef-4a94-dbf8-1cbfd18e3db7"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[4.0, 0.0, 0.0, 7073790.0, 2426912.0]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 15
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "dMNDj-JYHNC8"
+      },
+      "execution_count": 15,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "returns = 0\n",
+        "for s in range(len(p)): \n",
+        "    returns = returns + p[s] * r[s] * x[s]\n",
+        "returns"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "q6H8lURnCf07",
+        "outputId": "f3de42c2-2964-40ea-d092-959121dda2cb"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "-1580.1004892314304"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 16
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "risk = 0\n",
+        "for i in range(len(p)):\n",
+        "  for j in range(len(p)):\n",
+        "    coeff = p[i]*p[j]*m[j][i]\n",
+        "    risk = risk + coeff*x[j]*x[i]\n",
+        "risk"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "hP1lRB8MGtU4",
+        "outputId": "150ead75-3e72-4446-9ca8-9ed25afc3f04"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "1143110817.6779964"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 17
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "p_sd = np.sqrt(risk)/budget\n",
+        "p_sd"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "eIY0Kk2_JHyQ",
+        "outputId": "08fa2c67-9265-46ca-871d-0363a95f2a77"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "0.0033809921882163472"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 18
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "sr = ((returns/budget) - 0.015)/p_sd\n",
+        "sr"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "qI06hmWTJPS4",
+        "outputId": "ba036a9d-9003-4c45-cd0d-85880dbbda76"
+      },
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "-4.483302298583481"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 19
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [],
+      "metadata": {
+        "id": "BmZL-JaiJ318"
+      },
+      "execution_count": 19,
+      "outputs": []
+    }
+  ]
+}
